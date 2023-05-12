@@ -2,10 +2,9 @@ import XCTest
 @testable import FilesExplorer
 
 final class FilesExplorerTests: XCTestCase {
+    private let sut = FilesExplorer(workingDirectoryPath: )
+    
     func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(FilesExplorer().text, "Hello, World!")
+        XCTAssertEqual(sut.discoverFiles(withExtension: "swift"), [])
     }
 }
