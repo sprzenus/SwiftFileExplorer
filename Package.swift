@@ -20,6 +20,8 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "FilesExplorerTests",
-            dependencies: ["FilesExplorer"]),
+            dependencies: ["FilesExplorer"],
+            resources: []
+        ),
     ]
 )

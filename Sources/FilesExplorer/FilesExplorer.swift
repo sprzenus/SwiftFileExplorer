@@ -3,25 +3,26 @@ import Foundation
 public struct FilesExplorer {
     private let workingDirectoryPath: String
     
-//    private let fileManager: CustomFileManager
-
     public init(workingDirectoryPath: String) {
         self.workingDirectoryPath = workingDirectoryPath
-//        self.fileManager = CustomFileManager()
     }
     
-    public func discoverFiles(withExtension ext: String) -> [FilePath] {
-        FileManager.default.changeCurrentDirectoryPath(workingDirectoryPath)
-        let fileExtension = ext.removingPrefix(".")
-        var discoveredFiles: [FilePath] = []
+    public func discoverFiles(withExtension ext: String) -> Set<FilePath> {
+        let fileExtension = ext.removingPrefix(".").toString()
+        var discoveredFiles: Set<FilePath> = []
         let enumerator = FileManager.default.enumerator(
-            at: URL(filePath: FileManager.default.currentDirectoryPath, directoryHint: .isDirectory),
+            at: URL(string: workingDirectoryPath)!,
             includingPropertiesForKeys: nil,
-            options: [.skipsHiddenFiles],
+            options: [],
             errorHandler: nil
         )
         while let file = enumerator?.nextObject() as? URL {
-            print(file.absoluteString)
+            let components = file.path().split(separator: "/", omittingEmptySubsequences: true).map { $0.toString() }
+            guard let name = components.last,
+                  name.hasSuffix("." + fileExtension)
+            else { continue }
+            
+            discoveredFiles.insert(FilePath(path: file.path(), name: name, fileExtension: fileExtension))
         }
         
         return discoveredFiles
@@ -32,6 +33,12 @@ public struct FilePath: Equatable, Hashable {
     public let path: String
     public let name: String
     public let fileExtension: String
+    
+    public init(path: String, name: String, fileExtension: String) {
+        self.path = path
+        self.name = name
+        self.fileExtension = fileExtension
+    }
 }
 
 extension StringProtocol {
@@ -42,26 +49,8 @@ extension StringProtocol {
     }
 }
 
-extension Substring {
+extension StringProtocol {
     func toString() -> String {
         String(self)
     }
 }
-
-
-//final class CustomFileManager {
-//    private let fileManager = FileManager.default
-//
-//    var currentDirectoryPath: String {
-//        fileManager.currentDirectoryPath
-//    }
-//
-//    func contentsOfCurrentDirectory() throws -> [String] {
-//        fileManager.enumerator(
-//            at: URL(filePath: currentDirectoryPath, directoryHint: .isDirectory),
-//            includingPropertiesForKeys: nil,
-//            options: [.skipsHiddenFiles],
-//            errorHandler: nil
-//        )
-//    }
-//}
